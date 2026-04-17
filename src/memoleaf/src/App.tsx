@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { RepositoryContext } from './presentation/contexts/RepositoryContext';
 import { AppLayout } from './presentation/components/layout/AppLayout';
 import { IndexedDbLeafRepository } from './infrastructure/repositories/IndexedDbLeafRepository';
@@ -45,7 +45,8 @@ export default function App() {
 
   return (
     <RepositoryContext.Provider value={{ leafRepository, memoKindRepository }}>
-      <BrowserRouter>
+      {/* GitHub Pages対応: HashRouterでSPAルーティングを実現 */}
+      <HashRouter>
         <AppLayout>
           <Suspense
             fallback={
@@ -62,7 +63,7 @@ export default function App() {
             </Routes>
           </Suspense>
         </AppLayout>
-      </BrowserRouter>
+      </HashRouter>
     </RepositoryContext.Provider>
   );
 }
