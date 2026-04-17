@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- 幹 -->
+  <line x1="12" y1="22" x2="12" y2="13" />
+  <!-- 根元の広がり -->
+  <path d="M9 22 L12 22 L15 22" />
+  <!-- 中央の枝の葉 -->
+  <path d="M12 13C12 13 8 10 8 6C8 3.8 9.8 2 12 2C14.2 2 16 3.8 16 6C16 10 12 13 12 13Z" />
+  <!-- 左の枝 -->
+  <path d="M12 16C12 16 8 14 6 11C5 9.5 5.5 7.5 7 7C8.5 6.5 10 7.5 10 9C10 11.5 12 16 12 16Z" />
+  <!-- 右の枝 -->
+  <path d="M12 16C12 16 16 14 18 11C19 9.5 18.5 7.5 17 7C15.5 6.5 14 7.5 14 9C14 11.5 12 16 12 16Z" />
+</svg>

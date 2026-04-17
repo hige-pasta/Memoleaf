@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+  <!-- 種の楕円 -->
+  <ellipse cx="12" cy="17" rx="5" ry="4" />
+  <!-- 茎 -->
+  <line x1="12" y1="13" x2="12" y2="9" />
+  <!-- 左の双葉 -->
+  <path d="M12 11C12 11 9 10 8 7C7.5 5.5 8.5 4 10 4.5C11 5 11.5 6.5 12 8" />
+  <!-- 右の双葉 -->
+  <path d="M12 11C12 11 15 10 16 7C16.5 5.5 15.5 4 14 4.5C13 5 12.5 6.5 12 8" />
+</svg>

@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+/* メモリーフ カスタムスタイル */
+@layer base {
+  body {
+    font-family: system-ui, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+    background-color: #FAF6F0;
+    color: #3E2723;
+    margin: 0;
+  }
+
+  #root {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+  }
+}
