@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import type { MemoKind } from '../../../domain/entities/MemoKind';
 import { MemoKindButton } from '../shared/MemoKindButton';
-import { TagChip } from '../shared/TagChip';
+import { CloseIcon, FilterIcon } from '../shared/icons';
 import { SearchBar } from './SearchBar';
+import { FilterSheet } from './FilterSheet';
+import { PERIOD_LABELS, periodStart, type PeriodPreset } from './period';
 
 type FilterPanelProps = {
   memoKinds: MemoKind[];
   availableTags: string[];
+  resultCount: number;
   selectedKindIds: string[];
   selectedTags: string[];
   tagFilterMode: 'and' | 'or';
@@ -21,19 +25,19 @@ type FilterPanelProps = {
   onClearFilters: () => void;
 };
 
-/** Date を input[type="date"] 用の文字列（YYYY-MM-DD）に変換 */
-function dateToInputValue(date: Date | undefined): string {
-  if (!date) return '';
-  return date.toISOString().split('T')[0];
+/** 期間指定チップに表示する短い日付（M/D） */
+function shortDate(date: Date | undefined): string {
+  return date ? `${date.getMonth() + 1}/${date.getDate()}` : '';
 }
 
 /**
- * 絞り込みパネル
- * 種類・タグ・日付・キーワードによるフィルタリングを提供する
+ * 絞り込みバー
+ * 検索と種類チップだけを常時表示し、期間・タグはボトムシートで指定する
  */
 export function FilterPanel({
   memoKinds,
   availableTags,
+  resultCount,
   selectedKindIds,
   selectedTags,
   tagFilterMode,
@@ -48,12 +52,16 @@ export function FilterPanel({
   onDateToChange,
   onClearFilters,
 }: FilterPanelProps) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [periodPreset, setPeriodPreset] = useState<PeriodPreset>('all');
+
+  const hasDateFilter = dateFrom !== undefined || dateTo !== undefined;
+  // 日付が外部からクリアされた場合は「すべて」扱いにする（期間指定の入力中は維持）
+  const period: PeriodPreset =
+    periodPreset === 'custom' ? 'custom' : hasDateFilter ? periodPreset : 'all';
+  const sheetFilterCount = (hasDateFilter ? 1 : 0) + selectedTags.length;
   const hasActiveFilters =
-    selectedKindIds.length > 0 ||
-    selectedTags.length > 0 ||
-    keyword !== '' ||
-    dateFrom !== undefined ||
-    dateTo !== undefined;
+    selectedKindIds.length > 0 || selectedTags.length > 0 || keyword !== '' || hasDateFilter;
 
   const toggleKind = (id: string) => {
     onKindFilterChange(
@@ -63,94 +71,142 @@ export function FilterPanel({
     );
   };
 
-  const toggleTag = (tag: string) => {
-    onTagFilterChange(
-      selectedTags.includes(tag)
-        ? selectedTags.filter((t) => t !== tag)
-        : [...selectedTags, tag],
-    );
+  const changePeriod = (preset: PeriodPreset) => {
+    setPeriodPreset(preset);
+    if (preset === 'custom') return;
+    onDateFromChange(preset === 'all' ? undefined : periodStart(preset));
+    onDateToChange(undefined);
   };
 
+  const clearPeriod = () => changePeriod('all');
+
+  const resetSheetFilters = () => {
+    clearPeriod();
+    onTagFilterChange([]);
+    onTagFilterModeChange('or');
+  };
+
+  const clearAll = () => {
+    setPeriodPreset('all');
+    onClearFilters();
+  };
+
+  const periodChipLabel =
+    period === 'custom' ? `${shortDate(dateFrom)}〜${shortDate(dateTo)}` : PERIOD_LABELS[period];
+
   return (
-    <div className="flex flex-col gap-3 bg-amber-50 border border-amber-100 rounded-lg p-4">
-      {/* キーワード検索 */}
-      <SearchBar value={keyword} onChange={onKeywordChange} />
-
-      {/* 種類フィルタ */}
-      <div>
-        <div className="flex flex-wrap gap-2">
-          {memoKinds.map((kind) => (
-            <MemoKindButton
-              key={kind.id}
-              kind={kind}
-              isSelected={selectedKindIds.includes(kind.id)}
-              onClick={() => toggleKind(kind.id)}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* タグフィルタ */}
-      {availableTags.length > 0 && (
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-xs text-stone-500">タグ</span>
-            {selectedTags.length > 1 && (
-              <button
-                type="button"
-                onClick={() => onTagFilterModeChange(tagFilterMode === 'and' ? 'or' : 'and')}
-                className="text-xs px-2 py-0.5 rounded border border-stone-300 text-stone-500 hover:border-green-600 hover:text-green-700 transition-colors cursor-pointer"
-              >
-                {tagFilterMode === 'and' ? 'AND' : 'OR'}
-              </button>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            {availableTags.map((tag) => (
-              <TagChip
-                key={tag}
-                label={tag}
-                isActive={selectedTags.includes(tag)}
-                onClick={() => toggleTag(tag)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* 日付フィルタ */}
-      <div className="flex items-center gap-2">
-        <input
-          type="date"
-          value={dateToInputValue(dateFrom)}
-          onChange={(e) =>
-            onDateFromChange(e.target.value ? new Date(e.target.value) : undefined)
-          }
-          className="flex-1 px-2 py-1.5 rounded-md border border-stone-300 bg-white text-sm text-stone-700 focus:outline-none focus:border-green-600"
-          aria-label="期間開始日"
-        />
-        <span className="text-stone-400 text-sm">〜</span>
-        <input
-          type="date"
-          value={dateToInputValue(dateTo)}
-          onChange={(e) =>
-            onDateToChange(e.target.value ? new Date(e.target.value) : undefined)
-          }
-          className="flex-1 px-2 py-1.5 rounded-md border border-stone-300 bg-white text-sm text-stone-700 focus:outline-none focus:border-green-600"
-          aria-label="期間終了日"
-        />
-      </div>
-
-      {/* フィルタクリア */}
-      {hasActiveFilters && (
+    <div className="flex flex-col gap-3">
+      {/* 検索＋絞り込みボタン */}
+      <div className="flex gap-2">
+        <SearchBar value={keyword} onChange={onKeywordChange} />
         <button
           type="button"
-          onClick={onClearFilters}
-          className="text-sm text-stone-400 hover:text-stone-600 transition-colors cursor-pointer text-left"
+          onClick={() => setIsSheetOpen(true)}
+          aria-label={sheetFilterCount > 0 ? `絞り込み（${sheetFilterCount}件適用中）` : '絞り込み'}
+          className="relative inline-flex size-[46px] shrink-0 items-center justify-center rounded-[14px] bg-surface text-ink shadow-hair transition active:scale-95 cursor-pointer"
         >
-          フィルタをクリア
+          <FilterIcon className="size-5" />
+          {sheetFilterCount > 0 && (
+            <span className="absolute -right-1 -top-1 inline-flex size-5 items-center justify-center rounded-full bg-moss text-[11px] font-bold text-on-moss tabular-nums">
+              {sheetFilterCount}
+            </span>
+          )}
         </button>
+      </div>
+
+      {/* 種類フィルタ（横スクロール） */}
+      <div
+        className="no-scrollbar -mx-5 flex gap-2 overflow-x-auto px-5 py-0.5"
+        role="group"
+        aria-label="種類で絞り込み"
+      >
+        <button
+          type="button"
+          onClick={() => onKindFilterChange([])}
+          aria-pressed={selectedKindIds.length === 0}
+          className={`h-9 shrink-0 rounded-full px-3.5 text-[13px] transition active:scale-95 cursor-pointer ${
+            selectedKindIds.length === 0
+              ? 'bg-ink font-bold text-paper'
+              : 'border-[1.5px] border-line-strong bg-surface font-medium text-ink-2'
+          }`}
+        >
+          すべて
+        </button>
+        {memoKinds.map((kind) => (
+          <MemoKindButton
+            key={kind.id}
+            kind={kind}
+            size="sm"
+            isSelected={selectedKindIds.includes(kind.id)}
+            onClick={() => toggleKind(kind.id)}
+          />
+        ))}
+      </div>
+
+      {/* 適用中の期間・タグ */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {hasDateFilter && (
+            <AppliedChip label={periodChipLabel} onRemove={clearPeriod} removeLabel="期間の指定を解除" />
+          )}
+          {selectedTags.map((tag) => (
+            <AppliedChip
+              key={tag}
+              label={`#${tag}`}
+              onRemove={() => onTagFilterChange(selectedTags.filter((t) => t !== tag))}
+              removeLabel={`タグ「${tag}」の絞り込みを解除`}
+            />
+          ))}
+          <button
+            type="button"
+            onClick={clearAll}
+            className="h-[30px] rounded-full px-2.5 text-[13px] font-medium text-ink-3 transition hover:text-ink cursor-pointer"
+          >
+            すべてクリア
+          </button>
+        </div>
       )}
+
+      <FilterSheet
+        isOpen={isSheetOpen}
+        onClose={() => setIsSheetOpen(false)}
+        resultCount={resultCount}
+        period={period}
+        onPeriodChange={changePeriod}
+        dateFrom={dateFrom}
+        dateTo={dateTo}
+        onDateFromChange={onDateFromChange}
+        onDateToChange={onDateToChange}
+        availableTags={availableTags}
+        selectedTags={selectedTags}
+        tagFilterMode={tagFilterMode}
+        onTagFilterChange={onTagFilterChange}
+        onTagFilterModeChange={onTagFilterModeChange}
+        onReset={resetSheetFilters}
+      />
     </div>
+  );
+}
+
+type AppliedChipProps = {
+  label: string;
+  onRemove: () => void;
+  removeLabel: string;
+};
+
+/** 適用中の条件を示す、外せるチップ */
+function AppliedChip({ label, onRemove, removeLabel }: AppliedChipProps) {
+  return (
+    <span className="inline-flex h-[30px] items-center gap-0.5 rounded-full bg-moss-soft pl-3 pr-1 text-[13px] font-bold text-moss-ink">
+      {label}
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={removeLabel}
+        className="inline-flex size-6 items-center justify-center rounded-full transition hover:bg-moss/15 cursor-pointer"
+      >
+        <CloseIcon className="size-3.5" />
+      </button>
+    </span>
   );
 }

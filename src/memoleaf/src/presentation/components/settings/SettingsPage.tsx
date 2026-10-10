@@ -3,6 +3,7 @@ import { useAppSettings } from '../../hooks/useAppSettings';
 import { MemoKindForm } from './MemoKindForm';
 import { MemoKindList } from './MemoKindList';
 import { DefaultKindSetting } from './DefaultKindSetting';
+import { PageHeader } from '../shared/PageHeader';
 
 /**
  * Settingsページ
@@ -13,27 +14,23 @@ export function SettingsPage() {
   const { settings, updateDefaultKindMode, updateFixedDefaultKindId } = useAppSettings();
 
   return (
-    <div className="py-6 flex flex-col gap-6">
-      <h1 className="text-xl font-semibold text-stone-800">Settings</h1>
+    <div className="flex flex-col gap-7">
+      <PageHeader title="Settings" subtitle="種類と Write の設定" />
 
       {/* メモ種類管理 */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-base font-semibold text-stone-700 border-b border-stone-200 pb-2">
-          メモ種類の管理
-        </h2>
-        <MemoKindForm onAdd={async (input) => { await createMemoKind(input); }} />
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[15px] font-bold text-ink">メモ種類</h2>
         <MemoKindList
           memoKinds={memoKinds}
           onDelete={deleteMemoKind}
           onReorder={reorderMemoKinds}
         />
+        <MemoKindForm onAdd={async (input) => { await createMemoKind(input); }} />
       </section>
 
       {/* デフォルト種類設定 */}
-      <section className="flex flex-col gap-4">
-        <h2 className="text-base font-semibold text-stone-700 border-b border-stone-200 pb-2">
-          Write設定
-        </h2>
+      <section className="flex flex-col gap-3">
+        <h2 className="text-[15px] font-bold text-ink">Write</h2>
         <DefaultKindSetting
           settings={settings}
           memoKinds={memoKinds}

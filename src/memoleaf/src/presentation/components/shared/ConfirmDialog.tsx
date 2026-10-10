@@ -38,32 +38,35 @@ export function ConfirmDialog({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-overlay px-6 animate-fade-in"
       onClick={onCancel}
     >
       <div
-        className="bg-amber-50 rounded-xl shadow-xl p-6 max-w-sm w-full mx-4"
+        className="w-full max-w-sm rounded-[24px] bg-surface p-6 shadow-card animate-dialog-in"
         onClick={(e) => e.stopPropagation()}
-        role="dialog"
+        role="alertdialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
+        aria-describedby="confirm-dialog-message"
       >
-        <h2 id="confirm-dialog-title" className="text-lg font-semibold text-stone-800 mb-2">
+        <h2 id="confirm-dialog-title" className="mb-2 text-lg font-bold text-ink">
           {title}
         </h2>
-        <p className="text-sm text-stone-600 mb-6">{message}</p>
-        <div className="flex gap-3 justify-end">
+        <p id="confirm-dialog-message" className="mb-6 text-sm leading-relaxed text-ink-2">
+          {message}
+        </p>
+        <div className="flex gap-2.5">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 rounded-lg text-sm text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
+            className="h-12 flex-1 rounded-2xl bg-sunken text-sm font-bold text-ink-2 transition active:scale-[0.98] cursor-pointer"
           >
             {cancelLabel}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            className="px-4 py-2 rounded-lg text-sm bg-red-600 text-white hover:bg-red-700 transition-colors cursor-pointer"
+            className="h-12 flex-1 rounded-2xl bg-danger text-sm font-bold text-surface transition active:scale-[0.98] cursor-pointer"
           >
             {confirmLabel}
           </button>

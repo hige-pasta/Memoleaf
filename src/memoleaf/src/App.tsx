@@ -5,6 +5,7 @@ import { AppLayout } from './presentation/components/layout/AppLayout';
 import { IndexedDbLeafRepository } from './infrastructure/repositories/IndexedDbLeafRepository';
 import { IndexedDbMemoKindRepository } from './infrastructure/repositories/IndexedDbMemoKindRepository';
 import { seedInitialData } from './infrastructure/seed';
+import { PageSkeleton } from './presentation/components/shared/Skeleton';
 
 // WriteページはInitial bundleに含める（起動直後に表示するため）
 import { WritePage } from './presentation/components/write/WritePage';
@@ -37,8 +38,8 @@ export default function App() {
 
   if (!isReady) {
     return (
-      <div className="flex items-center justify-center min-h-svh bg-amber-50 text-stone-400 text-sm">
-        読み込み中...
+      <div className="max-w-2xl w-full mx-auto px-5">
+        <PageSkeleton />
       </div>
     );
   }
@@ -48,13 +49,7 @@ export default function App() {
       {/* GitHub Pages対応: HashRouterでSPAルーティングを実現 */}
       <HashRouter>
         <AppLayout>
-          <Suspense
-            fallback={
-              <div className="flex items-center justify-center py-16 text-stone-400 text-sm">
-                読み込み中...
-              </div>
-            }
-          >
+          <Suspense fallback={<PageSkeleton />}>
             <Routes>
               <Route path="/" element={<WritePage />} />
               <Route path="/read" element={<ReadPage />} />

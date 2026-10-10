@@ -1,23 +1,9 @@
 import { useState } from 'react';
-import { COLORS } from '../../../constants/colors';
+import { KIND_COLOR_PRESETS } from '../../../constants/colors';
 
 type MemoKindFormProps = {
   onAdd: (input: { name: string; color: string }) => Promise<void>;
 };
-
-/** カラープリセット（設計書のプリセットカラーを流用） */
-const COLOR_PRESETS = [
-  COLORS.kindDiary,
-  COLORS.kindIdea,
-  COLORS.kindTask,
-  COLORS.kindNote,
-  '#E11D48', // ローズ
-  '#EA580C', // オレンジ
-  '#65A30D', // ライム
-  '#0284C7', // スカイ
-  '#7E22CE', // パープル
-  '#78716C', // ストーン
-];
 
 /**
  * メモ種類追加フォーム
@@ -25,7 +11,7 @@ const COLOR_PRESETS = [
  */
 export function MemoKindForm({ onAdd }: MemoKindFormProps) {
   const [name, setName] = useState('');
-  const [color, setColor] = useState<string>(COLORS.kindDiary);
+  const [color, setColor] = useState<string>(KIND_COLOR_PRESETS[0]);
   const [isAdding, setIsAdding] = useState(false);
   const [error, setError] = useState('');
 
@@ -46,58 +32,63 @@ export function MemoKindForm({ onAdd }: MemoKindFormProps) {
   };
 
   return (
-    <div className="bg-white rounded-lg border border-stone-200 p-4">
-      <h2 className="text-sm font-semibold text-stone-700 mb-3">種類を追加</h2>
-      <div className="flex gap-2 items-end">
-        <div className="flex-1">
+    <div className="flex flex-col gap-3 rounded-[18px] bg-surface p-4 shadow-hair">
+      <h3 className="text-sm font-bold text-ink-2">種類を追加</h3>
+      <div className="flex gap-2">
+        <div className="relative flex-1">
+          <span
+            aria-hidden="true"
+            className="absolute left-3.5 top-1/2 size-2.5 -translate-y-1/2 rounded-full"
+            style={{ backgroundColor: color }}
+          />
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+            onKeyDown={(e) => e.key === 'Enter' && !e.nativeEvent.isComposing && handleSubmit()}
             placeholder="種類名"
             maxLength={20}
-            className="w-full px-3 py-2 text-sm rounded-md border border-stone-300 bg-white text-stone-700 placeholder-stone-400 focus:outline-none focus:border-green-600 transition-colors"
+            aria-label="種類名"
+            className="h-11 w-full rounded-xl bg-sunken pl-8 pr-3 text-sm text-ink outline-none placeholder:text-ink-3 focus:ring-2 focus:ring-moss/25"
           />
         </div>
-
-        {/* カラーピッカー */}
-        <div className="flex items-center gap-1.5">
-          {COLOR_PRESETS.map((preset) => (
-            <button
-              key={preset}
-              type="button"
-              onClick={() => setColor(preset)}
-              className="w-6 h-6 rounded-full cursor-pointer transition-transform hover:scale-110"
-              style={{
-                backgroundColor: preset,
-                outline: color === preset ? `2px solid ${preset}` : 'none',
-                outlineOffset: '2px',
-              }}
-              aria-label={`カラー: ${preset}`}
-              aria-pressed={color === preset}
-            />
-          ))}
-          {/* カスタムカラーピッカー */}
-          <input
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            className="w-6 h-6 rounded cursor-pointer border border-stone-300"
-            aria-label="カスタムカラーを選択"
-          />
-        </div>
-
         <button
           type="button"
           onClick={handleSubmit}
           disabled={!canAdd}
-          className="px-4 py-2 text-sm bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:bg-stone-200 disabled:text-stone-400 transition-colors cursor-pointer"
+          className="h-11 rounded-xl bg-moss px-5 text-sm font-bold text-on-moss transition active:scale-95 disabled:bg-sunken disabled:text-ink-3 cursor-pointer disabled:cursor-not-allowed"
         >
           追加
         </button>
       </div>
-      {error && <p className="mt-2 text-xs text-red-600">{error}</p>}
+
+      {/* カラーピッカー */}
+      <div className="flex flex-wrap items-center gap-2" role="group" aria-label="カラー">
+        {KIND_COLOR_PRESETS.map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            onClick={() => setColor(preset)}
+            className="size-7 rounded-full transition hover:scale-110 cursor-pointer"
+            style={{
+              backgroundColor: preset,
+              outline: color === preset ? `2px solid ${preset}` : 'none',
+              outlineOffset: '2px',
+            }}
+            aria-label={`カラー: ${preset}`}
+            aria-pressed={color === preset}
+          />
+        ))}
+        {/* カスタムカラーピッカー */}
+        <input
+          type="color"
+          value={color}
+          onChange={(e) => setColor(e.target.value)}
+          className="size-7 cursor-pointer appearance-none rounded-full border border-line-strong bg-transparent p-0.5 [&::-moz-color-swatch]:rounded-full [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-full [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:p-0"
+          aria-label="カスタムカラーを選択"
+        />
+      </div>
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
 }

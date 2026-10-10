@@ -2,22 +2,13 @@ import type { Leaf } from '../../../domain/entities/Leaf';
 import type { MemoKind } from '../../../domain/entities/MemoKind';
 import { LeafCard } from './LeafCard';
 import { EmptyState } from '../shared/EmptyState';
+import { formatMonthDay, relativeDayLabel } from '../../utils/date';
 
 type LeafTimelineProps = {
   leaves: Leaf[];
   memoKinds: MemoKind[];
   onLeafClick: (id: string) => void;
 };
-
-/** 日付を「YYYY年M月D日（曜日）」形式にフォーマット */
-function formatDateHeader(date: Date): string {
-  return date.toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    weekday: 'short',
-  });
-}
 
 /** Leafをcreated日付（YYYY-MM-DD）でグループ化 */
 function groupLeavesByDate(leaves: Leaf[]): Map<string, Leaf[]> {
@@ -48,25 +39,36 @@ export function LeafTimeline({ leaves, memoKinds, onLeafClick }: LeafTimelinePro
   const groups = groupLeavesByDate(leaves);
 
   return (
-    <div className="flex flex-col gap-6">
-      {[...groups.entries()].map(([dateKey, groupLeaves]) => (
-        <section key={dateKey}>
-          {/* 日付ヘッダー */}
-          <h2 className="text-xs font-medium text-stone-400 mb-2 sticky top-0 bg-amber-50 py-1">
-            {formatDateHeader(groupLeaves[0].createdAt)}
-          </h2>
-          <div className="flex flex-col gap-2">
-            {groupLeaves.map((leaf) => (
-              <LeafCard
-                key={leaf.id}
-                leaf={leaf}
-                kind={kindMap.get(leaf.kindId)}
-                onClick={() => onLeafClick(leaf.id)}
-              />
-            ))}
-          </div>
-        </section>
-      ))}
+    <div className="flex flex-col gap-1.5">
+      {[...groups.entries()].map(([dateKey, groupLeaves]) => {
+        const date = groupLeaves[0].createdAt;
+        const relative = relativeDayLabel(date);
+        return (
+          <section key={dateKey}>
+            {/* 日付ヘッダー（スクロール中も上部に残る） */}
+            <h2 className="sticky top-0 z-10 -mx-5 flex items-baseline gap-2 bg-paper/80 px-5 pb-2 pt-2.5 backdrop-blur-md">
+              {relative ? (
+                <>
+                  <span className="text-[15px] font-bold text-ink">{relative}</span>
+                  <span className="text-[13px] font-medium text-ink-3">{formatMonthDay(date)}</span>
+                </>
+              ) : (
+                <span className="text-[15px] font-bold text-ink">{formatMonthDay(date)}</span>
+              )}
+            </h2>
+            <div className="flex flex-col gap-2">
+              {groupLeaves.map((leaf) => (
+                <LeafCard
+                  key={leaf.id}
+                  leaf={leaf}
+                  kind={kindMap.get(leaf.kindId)}
+                  onClick={() => onLeafClick(leaf.id)}
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
