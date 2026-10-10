@@ -17,39 +17,39 @@ export function DefaultKindSetting({ settings, memoKinds, onModeChange, onFixedK
   const selectableKinds = memoKinds.filter((k) => k.id !== UNCATEGORIZED_KIND_ID);
 
   return (
-    <div className="bg-white rounded-lg border border-stone-200 p-4">
-      <h2 className="text-sm font-semibold text-stone-700 mb-3">デフォルトのメモ種類</h2>
+    <div className="rounded-[18px] bg-surface p-4 shadow-hair">
+      <h3 className="mb-3 text-sm font-bold text-ink-2">起動時に選ばれている種類</h3>
 
       <div className="flex flex-col gap-3">
         {/* 最後に使った種類 */}
-        <label className="flex items-center gap-2 cursor-pointer">
+        <label className="flex min-h-9 items-center gap-2.5 cursor-pointer">
           <input
             type="radio"
             name="defaultKindMode"
             value="lastUsed"
             checked={settings.defaultKindMode === 'lastUsed'}
             onChange={() => onModeChange('lastUsed')}
-            className="accent-green-700"
+            className="size-[18px] accent-moss"
           />
-          <span className="text-sm text-stone-700">最後に使った種類（自動）</span>
+          <span className="text-[15px] text-ink">最後に使った種類（自動）</span>
         </label>
 
         {/* 固定 */}
-        <label className="flex items-center gap-2 cursor-pointer">
+        <label className="flex min-h-9 items-center gap-2.5 cursor-pointer">
           <input
             type="radio"
             name="defaultKindMode"
             value="fixed"
             checked={settings.defaultKindMode === 'fixed'}
             onChange={() => onModeChange('fixed')}
-            className="accent-green-700"
+            className="size-[18px] accent-moss"
           />
-          <span className="text-sm text-stone-700">固定:</span>
+          <span className="text-[15px] text-ink">固定:</span>
           {settings.defaultKindMode === 'fixed' && (
             <select
               value={settings.fixedDefaultKindId ?? ''}
               onChange={(e) => onFixedKindChange(e.target.value || null)}
-              className="ml-1 px-2 py-1 text-sm rounded-md border border-stone-300 bg-white text-stone-700 focus:outline-none focus:border-green-600"
+              className="ml-1 h-9 rounded-lg bg-sunken px-2.5 text-sm text-ink outline-none focus:ring-2 focus:ring-moss/25"
             >
               <option value="">選択してください</option>
               {selectableKinds.map((kind) => (

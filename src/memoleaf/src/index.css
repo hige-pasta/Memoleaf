@@ -1,17 +1,209 @@
 @import "tailwindcss";
 
+/*
+ * メモリーフ デザイントークン
+ * 色は CSS 変数で定義し、ダークモードでは値だけを差し替える。
+ * Tailwind からは bg-paper / text-ink などのユーティリティとして参照する。
+ */
+:root {
+  /* ベース */
+  --ml-paper: #f5f4ef;        /* 背景 */
+  --ml-surface: #ffffff;      /* カード・シート */
+  --ml-sunken: #f0eee8;       /* チップ・入力欄などの一段沈んだ面 */
+  --ml-ink: #1d231f;          /* メインテキスト */
+  --ml-ink-2: #4f5751;        /* サブテキスト */
+  --ml-ink-3: #656c66;        /* 補足・プレースホルダー */
+  --ml-line: rgb(29 35 31 / 0.07);  /* 区切り線 */
+  --ml-line-strong: #d9d6ce;  /* 枠線 */
+
+  /* アクセント（モスグリーン） */
+  --ml-moss: #2f6a45;         /* プライマリ */
+  --ml-on-moss: #ffffff;      /* プライマリ上の文字 */
+  --ml-moss-soft: #e3eee5;    /* アクティブ背景 */
+  --ml-moss-ink: #245236;     /* アクティブ文字・リンク */
+  --ml-new: #eef5ef;          /* 投稿直後のハイライト */
+
+  /* 危険操作 */
+  --ml-danger: #a8322a;
+  --ml-danger-soft: #fbedeb;
+  --ml-danger-line: #ebd5d2;
+
+  /* オーバーレイ・ナビ・トースト */
+  --ml-overlay: rgb(15 20 16 / 0.38);
+  --ml-nav: rgb(255 255 255 / 0.74);
+  --ml-toast: #1d231f;
+  --ml-toast-fg: #f5f4ef;
+  --ml-toast-accent: #9dd3ab;
+
+  /* スケルトン */
+  --ml-skeleton: #eceae4;
+  --ml-skeleton-hi: #f6f5f1;
+
+  /* 影 */
+  --ml-shadow-hair: 0 1px 2px rgb(29 35 31 / 0.05);
+  --ml-shadow-card: 0 1px 2px rgb(29 35 31 / 0.05), 0 8px 24px rgb(29 35 31 / 0.07);
+  --ml-shadow-primary: 0 4px 12px rgb(47 106 69 / 0.28);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ml-paper: #111412;
+    --ml-surface: #1a1e1b;
+    --ml-sunken: #252a26;
+    --ml-ink: #e8ece8;
+    --ml-ink-2: #b3bab4;
+    --ml-ink-3: #8f9791;
+    --ml-line: rgb(255 255 255 / 0.08);
+    --ml-line-strong: #3a413c;
+
+    --ml-moss: #8cc49b;
+    --ml-on-moss: #0f1a12;
+    --ml-moss-soft: #21382a;
+    --ml-moss-ink: #a6dbb3;
+    --ml-new: #1d2d22;
+
+    --ml-danger: #f2a39b;
+    --ml-danger-soft: #3a1f1c;
+    --ml-danger-line: #5a2f2a;
+
+    --ml-overlay: rgb(0 0 0 / 0.55);
+    --ml-nav: rgb(30 34 31 / 0.72);
+    --ml-toast: #e8ece8;
+    --ml-toast-fg: #111412;
+    --ml-toast-accent: #2f6a45;
+
+    --ml-skeleton: #222724;
+    --ml-skeleton-hi: #2c322e;
+
+    --ml-shadow-hair: 0 1px 2px rgb(0 0 0 / 0.4);
+    --ml-shadow-card: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px rgb(0 0 0 / 0.35);
+    --ml-shadow-primary: 0 4px 12px rgb(0 0 0 / 0.35);
+
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--ml-paper);
+  --color-surface: var(--ml-surface);
+  --color-sunken: var(--ml-sunken);
+  --color-ink: var(--ml-ink);
+  --color-ink-2: var(--ml-ink-2);
+  --color-ink-3: var(--ml-ink-3);
+  --color-line: var(--ml-line);
+  --color-line-strong: var(--ml-line-strong);
+  --color-moss: var(--ml-moss);
+  --color-on-moss: var(--ml-on-moss);
+  --color-moss-soft: var(--ml-moss-soft);
+  --color-moss-ink: var(--ml-moss-ink);
+  --color-new: var(--ml-new);
+  --color-danger: var(--ml-danger);
+  --color-danger-soft: var(--ml-danger-soft);
+  --color-danger-line: var(--ml-danger-line);
+  --color-overlay: var(--ml-overlay);
+  --color-nav: var(--ml-nav);
+  --color-toast: var(--ml-toast);
+  --color-toast-fg: var(--ml-toast-fg);
+  --color-toast-accent: var(--ml-toast-accent);
+}
+
+@theme {
+  --font-sans: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP',
+    Meiryo, system-ui, sans-serif;
+
+  /* アニメーション */
+  --animate-fade-in: fade-in 180ms ease-out;
+  --animate-page-in: page-in 220ms ease-out;
+  --animate-sheet-up: sheet-up 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-dialog-in: dialog-in 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-toast-in: toast-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-leaf-in: leaf-in 480ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes page-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes sheet-up {
+    from { transform: translateY(100%); }
+    to { transform: none; }
+  }
+  @keyframes dialog-in {
+    from { opacity: 0; transform: scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+  /* 葉が舞い落ちるように一覧へ入る */
+  @keyframes leaf-in {
+    from { opacity: 0; transform: translateY(-10px) rotate(-1.5deg); }
+    60% { opacity: 1; transform: translateY(2px) rotate(0.4deg); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shimmer {
+    from { background-position: 100% 0; }
+    to { background-position: -100% 0; }
+  }
+}
+
+@utility shadow-hair {
+  box-shadow: var(--ml-shadow-hair);
+}
+@utility shadow-card {
+  box-shadow: var(--ml-shadow-card);
+}
+@utility shadow-primary {
+  box-shadow: var(--ml-shadow-primary);
+}
+
+/* 横スクロールのチップ列でスクロールバーを隠す */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* 読み込み中のプレースホルダー */
+@utility skeleton {
+  background: linear-gradient(90deg, var(--ml-skeleton) 0%, var(--ml-skeleton-hi) 50%, var(--ml-skeleton) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
 /* メモリーフ カスタムスタイル */
 @layer base {
   body {
-    font-family: system-ui, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-    background-color: #FAF6F0;
-    color: #3E2723;
+    font-family: var(--font-sans);
+    font-feature-settings: 'palt';
+    background-color: var(--ml-paper);
+    color: var(--ml-ink);
     margin: 0;
+    -webkit-tap-highlight-color: transparent;
   }
 
   #root {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+  }
+}
+
+/* 動きを減らす設定のユーザーにはアニメーションを止める */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
   }
 }

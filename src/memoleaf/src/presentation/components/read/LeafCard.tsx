@@ -1,6 +1,6 @@
 import type { Leaf } from '../../../domain/entities/Leaf';
 import type { MemoKind } from '../../../domain/entities/MemoKind';
-import { TagChip } from '../shared/TagChip';
+import { formatTime } from '../../utils/date';
 
 type LeafCardProps = {
   leaf: Leaf;
@@ -8,50 +8,40 @@ type LeafCardProps = {
   onClick: () => void;
 };
 
-/** 相対時間を返す（今日の場合はHH:mm、それ以外はM月D日） */
-function formatDateTime(date: Date): string {
-  const now = new Date();
-  const isToday =
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth() &&
-    date.getDate() === now.getDate();
-
-  if (isToday) {
-    return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-  }
-  return date.toLocaleDateString('ja-JP', { month: 'numeric', day: 'numeric' });
-}
-
 /**
  * Leafカードコンポーネント
- * タイムライン内の1件のメモを表示する
+ * タイムライン内の1件のメモを表示する（日付は見出し側で示すため時刻のみ）
  */
 export function LeafCard({ leaf, kind, onClick }: LeafCardProps) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="w-full text-left bg-white rounded-lg shadow-sm border border-stone-100 p-4 hover:border-stone-200 hover:shadow-md transition-all cursor-pointer"
+      className="flex w-full flex-col gap-2 rounded-2xl bg-surface px-4 py-3.5 text-left shadow-hair transition hover:shadow-card active:scale-[0.99] cursor-pointer"
     >
       {/* 本文（最大3行） */}
-      <p className="text-stone-800 text-sm leading-relaxed line-clamp-3 whitespace-pre-wrap mb-3">
+      <p className="line-clamp-3 whitespace-pre-wrap text-[15px] leading-[1.65] text-ink">
         {leaf.body}
       </p>
 
-      {/* フッター：種類ラベル・タグ・時刻 */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* メタ情報：種類・タグ・時刻 */}
+      <div className="flex w-full items-center gap-2.5 text-xs">
         {kind && (
-          <span
-            className="text-xs px-2 py-0.5 rounded-full font-medium text-white"
-            style={{ backgroundColor: kind.color }}
-          >
+          <span className="inline-flex shrink-0 items-center gap-1.5 font-medium text-ink-2">
+            <span
+              aria-hidden="true"
+              className="size-[7px] rounded-full"
+              style={{ backgroundColor: kind.color }}
+            />
             {kind.name}
           </span>
         )}
-        {leaf.tags.map((tag) => (
-          <TagChip key={tag} label={tag} />
-        ))}
-        <span className="ml-auto text-xs text-stone-400">{formatDateTime(leaf.createdAt)}</span>
+        {leaf.tags.length > 0 && (
+          <span className="min-w-0 truncate text-ink-3">
+            {leaf.tags.map((tag) => `#${tag}`).join('  ')}
+          </span>
+        )}
+        <span className="ml-auto shrink-0 text-ink-3 tabular-nums">{formatTime(leaf.createdAt)}</span>
       </div>
     </button>
   );

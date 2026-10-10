@@ -39,31 +39,35 @@ export function LeafEditForm({ initialValues, memoKinds, onSave, onCancel }: Lea
 
   return (
     <div className="flex flex-col gap-4">
-      <textarea
-        value={body}
-        onChange={(e) => setBody(e.target.value)}
-        className="w-full min-h-[120px] p-3 rounded-md border border-stone-300 bg-white text-base text-stone-800 resize-none focus:outline-none focus:border-green-600 transition-colors"
-        aria-label="メモ本文"
-      />
+      <h2 className="text-[19px] font-bold text-ink">メモを編集</h2>
 
       <div className="flex flex-wrap gap-2" role="group" aria-label="メモ種類">
         {memoKinds.map((kind) => (
           <MemoKindButton
             key={kind.id}
             kind={kind}
+            size="sm"
             isSelected={kindId === kind.id}
             onClick={() => setKindId(kind.id)}
           />
         ))}
       </div>
 
-      <TagInput tags={tags} onChange={setTags} />
+      <div className="flex flex-col gap-2.5 rounded-[20px] border border-line-strong bg-surface p-4 transition focus-within:ring-2 focus-within:ring-moss/25">
+        <textarea
+          value={body}
+          onChange={(e) => setBody(e.target.value)}
+          className="min-h-[120px] w-full resize-none bg-transparent text-[17px] leading-relaxed text-ink outline-none"
+          aria-label="メモ本文"
+        />
+        <TagInput tags={tags} onChange={setTags} />
+      </div>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex gap-2.5">
         <button
           type="button"
           onClick={onCancel}
-          className="px-4 py-2 text-sm text-stone-600 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer"
+          className="h-[52px] flex-1 rounded-2xl bg-sunken text-[15px] font-bold text-ink-2 transition active:scale-[0.98] cursor-pointer"
         >
           キャンセル
         </button>
@@ -71,7 +75,7 @@ export function LeafEditForm({ initialValues, memoKinds, onSave, onCancel }: Lea
           type="button"
           onClick={handleSave}
           disabled={!canSave}
-          className="px-4 py-2 text-sm bg-green-700 text-white rounded-lg hover:bg-green-800 disabled:bg-stone-200 disabled:text-stone-400 transition-colors cursor-pointer"
+          className="h-[52px] flex-[2] rounded-2xl bg-moss text-[15px] font-bold text-on-moss transition active:scale-[0.98] disabled:bg-sunken disabled:text-ink-3 cursor-pointer disabled:cursor-not-allowed"
         >
           {isSaving ? '保存中...' : '保存する'}
         </button>

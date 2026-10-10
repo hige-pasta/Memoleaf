@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import type { MemoKind } from '../../../domain/entities/MemoKind';
 import { ConfirmDialog } from '../shared/ConfirmDialog';
 import { UNCATEGORIZED_KIND_ID } from '../../../constants/presets';
+import { GripIcon, TrashIcon } from '../shared/icons';
 
 type MemoKindListProps = {
   memoKinds: MemoKind[];
@@ -60,7 +61,7 @@ export function MemoKindList({ memoKinds, onDelete, onReorder }: MemoKindListPro
 
   return (
     <>
-      <ul className="flex flex-col gap-2">
+      <ul className="divide-y divide-line overflow-hidden rounded-[18px] bg-surface shadow-hair">
         {memoKinds.map((kind) => {
           const isUncategorized = kind.id === UNCATEGORIZED_KIND_ID;
           return (
@@ -71,38 +72,35 @@ export function MemoKindList({ memoKinds, onDelete, onReorder }: MemoKindListPro
               onDragOver={(e) => !isUncategorized && handleDragOver(e, kind.id)}
               onDrop={() => !isUncategorized && handleDrop(kind.id)}
               onDragEnd={handleDragEnd}
-              className={`flex items-center gap-3 bg-white rounded-lg border px-4 py-3 transition-all
+              className={`flex h-[52px] items-center gap-3 px-4 transition-all
                 ${draggingId === kind.id ? 'opacity-40' : ''}
-                ${dragOverId === kind.id ? 'border-green-500 shadow-sm' : 'border-stone-200'}
-                ${!isUncategorized ? 'cursor-grab active:cursor-grabbing' : ''}
+                ${dragOverId === kind.id ? 'bg-moss-soft' : ''}
+                ${!isUncategorized ? 'cursor-grab active:cursor-grabbing' : 'pl-11'}
               `}
             >
               {/* ドラッグハンドル */}
               {!isUncategorized && (
-                <svg className="w-4 h-4 text-stone-300 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M9 5a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm6-12a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-                </svg>
+                <GripIcon className="size-4 shrink-0 text-ink-3" />
               )}
 
               {/* カラードットと名前 */}
               <span
-                className="w-3 h-3 rounded-full flex-shrink-0"
+                className="size-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: kind.color }}
                 aria-hidden="true"
               />
-              <span className="flex-1 text-sm text-stone-700">{kind.name}</span>
+              <span className="flex-1 text-[15px] text-ink">{kind.name}</span>
+              {isUncategorized && <span className="text-xs text-ink-3">削除できません</span>}
 
               {/* 未分類は削除不可 */}
               {!isUncategorized && (
                 <button
                   type="button"
                   onClick={() => setDeleteTargetId(kind.id)}
-                  className="text-stone-400 hover:text-red-500 transition-colors cursor-pointer"
+                  className="-mr-2 inline-flex size-9 items-center justify-center rounded-full text-ink-3 transition hover:bg-danger-soft hover:text-danger cursor-pointer"
                   aria-label={`「${kind.name}」を削除`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <TrashIcon className="size-[18px]" />
                 </button>
               )}
             </li>

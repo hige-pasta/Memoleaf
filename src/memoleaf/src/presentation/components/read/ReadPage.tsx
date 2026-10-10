@@ -8,6 +8,8 @@ import { deleteLeaf } from '../../../domain/usecases/deleteLeaf';
 import { FilterPanel } from './FilterPanel';
 import { LeafTimeline } from './LeafTimeline';
 import { LeafDetailModal } from './LeafDetailModal';
+import { PageHeader } from '../shared/PageHeader';
+import { LeafListSkeleton } from '../shared/Skeleton';
 import type { Leaf } from '../../../domain/entities/Leaf';
 
 /**
@@ -75,11 +77,17 @@ export function ReadPage() {
   };
 
   return (
-    <div className="py-4 flex flex-col gap-4">
-      {/* 絞り込みパネル */}
+    <div className="flex flex-col gap-4">
+      <PageHeader
+        title="Read"
+        subtitle={isLoading ? 'すべての leaf' : `${filteredLeaves.length}件の leaf`}
+      />
+
+      {/* 絞り込みバー */}
       <FilterPanel
         memoKinds={memoKinds}
         availableTags={availableTags}
+        resultCount={filteredLeaves.length}
         selectedKindIds={selectedKindIds}
         selectedTags={selectedTags}
         tagFilterMode={tagFilterMode}
@@ -97,7 +105,7 @@ export function ReadPage() {
 
       {/* タイムライン表示エリア */}
       {isLoading ? (
-        <div className="text-center text-stone-400 text-sm py-8">読み込み中...</div>
+        <LeafListSkeleton />
       ) : (
         <LeafTimeline
           leaves={filteredLeaves}
@@ -106,7 +114,7 @@ export function ReadPage() {
         />
       )}
 
-      {/* Leaf詳細モーダル */}
+      {/* Leaf詳細シート */}
       <LeafDetailModal
         leaf={selectedLeaf}
         memoKinds={memoKinds}

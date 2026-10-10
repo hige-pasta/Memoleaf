@@ -1,3 +1,5 @@
+import { SearchIcon } from '../shared/icons';
+
 type SearchBarProps = {
   value: string;
   onChange: (value: string) => void;
@@ -9,27 +11,14 @@ type SearchBarProps = {
  */
 export function SearchBar({ value, onChange }: SearchBarProps) {
   return (
-    <div className="relative">
-      <svg
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-        />
-      </svg>
+    <div className="relative flex-1">
+      <SearchIcon className="pointer-events-none absolute left-3.5 top-1/2 size-[18px] -translate-y-1/2 text-ink-3" />
       <input
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="キーワードで検索..."
-        className="w-full pl-9 pr-4 py-2 rounded-md border border-stone-300 bg-white text-sm text-stone-700 placeholder-stone-400 focus:outline-none focus:border-green-600 transition-colors"
+        placeholder="キーワードで検索"
+        className="h-[46px] w-full rounded-[14px] bg-surface pl-[42px] pr-3.5 text-[15px] text-ink shadow-hair outline-none transition placeholder:text-ink-3 focus:ring-2 focus:ring-moss/25"
         aria-label="キーワード検索"
       />
     </div>

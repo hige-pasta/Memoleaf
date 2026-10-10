@@ -1,5 +1,6 @@
 import { useState, type KeyboardEvent } from 'react';
 import { TagChip } from './TagChip';
+import { PlusIcon } from './icons';
 
 type TagInputProps = {
   tags: string[];
@@ -27,6 +28,8 @@ export function TagInput({ tags, onChange }: TagInputProps) {
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    // IME変換確定のEnterではタグを確定しない
+    if (e.nativeEvent.isComposing) return;
     if (e.key === 'Enter') {
       e.preventDefault();
       addTag(inputValue);
@@ -57,18 +60,22 @@ export function TagInput({ tags, onChange }: TagInputProps) {
   };
 
   return (
-    <div className="flex flex-wrap gap-1.5 items-center p-2 rounded-md border border-stone-300 bg-white min-h-[40px] focus-within:border-green-600 transition-colors">
+    <div className="flex flex-wrap items-center gap-1.5">
       {tags.map((tag, i) => (
         <TagChip key={tag} label={tag} onRemove={() => removeTag(i)} />
       ))}
-      <input
-        type="text"
-        value={inputValue}
-        onChange={(e) => handleChange(e.target.value)}
-        onKeyDown={handleKeyDown}
-        placeholder={tags.length === 0 ? 'タグを入力（Enterまたは,で確定）' : ''}
-        className="flex-1 min-w-[120px] outline-none text-sm bg-transparent text-stone-700 placeholder-stone-400"
-      />
+      <label className="inline-flex h-[30px] items-center gap-1 rounded-full border border-dashed border-line-strong px-2.5 text-[13px] text-ink-3 transition focus-within:border-moss focus-within:text-ink-2">
+        <PlusIcon className="size-3.5" />
+        <span className="sr-only">タグを追加（Enterまたは,で確定）</span>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => handleChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="タグ"
+          className="w-12 bg-transparent text-[13px] text-ink outline-none placeholder:text-ink-3 transition-[width] focus:w-28"
+        />
+      </label>
     </div>
   );
 }
